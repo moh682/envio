@@ -1,7 +1,6 @@
 "use client";
 
 import { DatePicker } from "@/components/date-picker";
-import { Alert } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
@@ -58,6 +57,11 @@ export const InvoiceForm = () => {
     defaultValues: {
       invoiceNumber,
       issuedAt: new Date(),
+      customerAddress: "",
+      customerCarRegistration: "",
+      customerEmail: "",
+      customerName: "",
+      customerPhone: "",
       products: [
         {
           id: "",
@@ -85,12 +89,15 @@ export const InvoiceForm = () => {
   };
 
   return (
-    <section className="w-full p-2 flex justify-center content-center items-center">
+    <section>
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit, onError)} className="flex flex-col w-5/6 gap-8 py-12">
-          {Object.values(form.formState.errors).length > 0 && (
-            <Alert variant={"destructive"}>Please fix the errors below</Alert>
-          )}
+        <form
+          onSubmit={form.handleSubmit(onSubmit, onError)}
+          className="flex flex-col gap-3"
+          onKeyDown={(e) => {
+            if (e.key === "Enter") e.preventDefault();
+          }}
+        >
           <div className="flex justify-between">
             <div className="flex w-96 flex-col gap-4">
               <FormField
@@ -204,7 +211,7 @@ export const InvoiceForm = () => {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {products.fields.map((product, index) => (
+                {products.fields.map((product, index, arr) => (
                   <TableRow key={product.id}>
                     <TableCell>
                       <FormField
@@ -226,7 +233,7 @@ export const InvoiceForm = () => {
                         render={({ field, fieldState }) => (
                           <FormItem>
                             <FormControl>
-                              <Input {...field} />
+                              <Input {...field} autoFocus />
                             </FormControl>
                           </FormItem>
                         )}
@@ -253,7 +260,7 @@ export const InvoiceForm = () => {
                       <FormField
                         control={form.control}
                         name={`products.${index}.price`}
-                        render={({ field, fieldState }) => (
+                        render={({ field }) => (
                           <FormItem>
                             <FormControl>
                               <Input
@@ -273,9 +280,11 @@ export const InvoiceForm = () => {
                       />
                     </TableCell>
                     <TableCell>
-                      <Button variant={"secondary"} onClick={() => products.remove(index)}>
-                        X
-                      </Button>
+                      {arr.length > 1 && (
+                        <Button variant={"secondary"} onClick={() => products.remove(index)}>
+                          X
+                        </Button>
+                      )}
                     </TableCell>
                   </TableRow>
                 ))}
@@ -283,7 +292,15 @@ export const InvoiceForm = () => {
               <TableCaption>
                 <Button
                   variant={"secondary"}
-                  onClick={() => products.append({ description: "", price: 0, quantity: 0, id: "" })}
+                  type="button"
+                  onClick={() =>
+                    products.append(
+                      { description: "", price: 0, quantity: 0, id: "" },
+                      {
+                        focusName: `products.${products.fields.length}.description`,
+                      }
+                    )
+                  }
                 >
                   +
                 </Button>
