@@ -1,85 +1,78 @@
 "use client";
 
-import { useFieldArray, useForm } from "react-hook-form";
+import { useForm, useWatch } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
-import { Alert } from "@/components/ui/alert";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Button } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
-import { ChevronsUpDown, Command } from "lucide-react";
-import { CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Separator } from "@/components/ui/separator";
 import { Input } from "@/components/ui/input";
-import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { DatePicker } from "@/components/date-picker";
+import { Switch } from "@/components/ui/switch";
+import { Label } from "@radix-ui/react-label";
 
-const VAT_RATE = 0.25;
-const ExpenseSchema = z
-  .object({
-    company: z.string(),
-    issuedAt: z.date(),
-    paidAt: z.date(),
-    paidWith: z.number(),
-    vatRate: z.number().readonly().default(VAT_RATE),
-    products: z.array(
-      z
-        .object({
-          serial: z.string(),
-          description: z.string(),
-          quantity: z.number().positive().default(0),
-          unitPrice: z.number().positive().default(0),
-        })
-        .transform((data) => {
-          const totalExclVat = data.quantity * data.unitPrice;
-          const totalInclVat = totalExclVat > 0 ? totalExclVat * (1 + VAT_RATE) : 0;
-          return {
-            ...data,
-            total: data.quantity * data.unitPrice,
-            totalInclVat,
-            totalExclVat,
-          };
-        })
-    ),
-  })
-  .transform((data) => {
-    const totalExclVat = data.products.reduce((acc, item) => acc + item.quantity * item.unitPrice, 0);
-    const totalInclVat = totalExclVat > 0 ? totalExclVat * (1 + VAT_RATE) : 0;
-    const vatAmount = totalInclVat - totalExclVat;
+const paymentOptions = [
+  {
+    value: "CASH",
+    text: "Cash",
+  },
+  {
+    value: "BANK",
+    text: "Bank",
+  },
+];
 
-    return {
-      ...data,
-      totalInclVat,
-      totalExclVat,
-      vatAmount,
-    };
-  });
+const accounts = [
+  {
+    value: "SALG_YDELSER",
+    text: "Salg og Ydelser",
+    isVat: true,
+  },
+  {
+    value: "KONTOR_ARTIKLER",
+    text: "Kontor artikler",
+    isVat: false,
+  },
+];
+const ExpenseSchema = z.object({
+  issuedAt: z.date(),
+  paymentOption: z.string(),
+  account: z.string(),
+  isVat: z.boolean(),
+  amount: z.string().min(1),
+});
 
 export const ExponseForm = () => {
   const form = useForm<z.infer<typeof ExpenseSchema>>({
     resolver: zodResolver(ExpenseSchema),
     defaultValues: {
       issuedAt: new Date(),
-      paidAt: new Date(),
-      company: "",
-      paidWith: 0,
-
-      products: [
-        {
-          serial: "",
-          description: "",
-          quantity: 0,
-          unitPrice: 0,
-        },
-      ],
+      paymentOption: "",
+      account: "",
+      isVat: true,
+      amount: "",
     },
   });
 
-  const products = useFieldArray({ control: form.control, name: "products" });
+  useWatch({
+    control: form.control,
+    name: ["isVat", "amount"],
+    exact: true,
+  });
 
-  const getSum = () => {
-    return form.watch("products").reduce((acc, item) => acc + item.quantity * item.unitPrice, 0);
+  const calcTotal = () => {
+    let amount = form.getValues().amount;
+    const isVat = form.getValues().isVat;
+
+    if (!amount) return 0;
+
+    let parsedAmount = parseFloat(amount);
+
+    if (isNaN(parsedAmount)) return 0;
+
+    if (isVat) parsedAmount = parsedAmount * 1.25;
+
+    return parsedAmount.toFixed(2);
   };
 
   const onSubmit = async (data: z.infer<typeof ExpenseSchema>) => {
@@ -91,246 +84,113 @@ export const ExponseForm = () => {
   };
 
   return (
-    <section className="w-full p-2 flex justify-center content-center items-center">
+    <section>
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit, onError)} className="flex flex-col w-5/6 gap-8 py-12">
-          {Object.values(form.formState.errors).length > 0 && (
-            <Alert variant={"destructive"}>Please fix the errors below</Alert>
-          )}
-          <div className="flex justify-between">
-            <div className="flex w-96 flex-col gap-4">
-              <FormField
-                control={form.control}
-                name="company"
-                render={({ field }) => (
-                  <FormItem className="relative w-72">
-                    <FormLabel>Company</FormLabel>
-
-                    <Popover>
-                      <PopoverTrigger asChild>
-                        <FormControl>
-                          <Button
-                            type="button"
-                            variant="outline"
-                            role="combobox"
-                            className={cn("w-[200px] justify-between", !field.value && "text-muted-foreground")}
-                          >
-                            asdasd
-                            <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-                          </Button>
-                        </FormControl>
-                      </PopoverTrigger>
-                      <PopoverContent className="w-[200px]">
-                        <Command>
-                          <CommandInput placeholder="Search language..." />
-                          <CommandList>
-                            <CommandEmpty>No language found.</CommandEmpty>
-                            <CommandGroup>
-                              <CommandItem key={"add-button"}>
-                                <Button>Add</Button>
-                              </CommandItem>
-                            </CommandGroup>
-                          </CommandList>
-                        </Command>
-                      </PopoverContent>
-                    </Popover>
-
-                    <FormDescription>Company name the expense is from</FormDescription>
-                  </FormItem>
-                )}
-              />
-              <div className="flex gap-2">
-                <FormField
-                  control={form.control}
-                  name="issuedAt"
-                  render={({ field }) => (
-                    <FormItem className="w-72">
-                      <FormLabel>Issued At</FormLabel>
-                      <FormControl>
-                        {/* <DatePicker onSelect={(selected) => field.onChange(selected)} selected={field.value} /> */}
-                      </FormControl>
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name="paidAt"
-                  render={({ field }) => (
-                    <FormItem className="w-72">
-                      <FormLabel>Paid At</FormLabel>
-                      <FormControl>
-                        {/* <DatePicker onSelect={(selected) => field.onChange(selected)} selected={field.value} /> */}
-                      </FormControl>
-                    </FormItem>
-                  )}
-                />
-              </div>
-            </div>
-            <div className="flex w-72 flex-col gap-4">
-              <h3 className="font-bold text-lg">Customer</h3>
-              <FormField
-                control={form.control}
-                name="paidWith"
-                render={({ field, fieldState }) => (
-                  <FormItem>
-                    <FormLabel>Paid With</FormLabel>
-                    <FormControl>
-                      <Select>
-                        <SelectTrigger className="w-[180px]">
-                          <SelectValue placeholder={field.value} />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="set value">Set Value</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </FormControl>
-                    {fieldState.error && <FormMessage>{fieldState.error.message}</FormMessage>}
-                  </FormItem>
-                )}
-              />
-            </div>
-          </div>
-          <div className="flex flex-col gap-4">
-            <h3 className="font-bold text-lg">Products</h3>
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead className="w-28">Serial</TableHead>
-                  <TableHead>Description</TableHead>
-                  <TableHead className="w-20">Quantity</TableHead>
-                  <TableHead className="w-28">Price</TableHead>
-                  <TableHead className="w-28 text-right">Total</TableHead>
-                  <TableHead className="w-20" />
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {products.fields.map((product, index) => (
-                  <TableRow key={product.id + index}>
-                    <TableCell>
-                      <FormField
-                        control={form.control}
-                        name={`products.${index}.serial`}
-                        render={({ field, fieldState }) => (
-                          <FormItem>
-                            <FormControl>
-                              <Input {...field} />
-                            </FormControl>
-                          </FormItem>
-                        )}
-                      />
-                    </TableCell>
-                    <TableCell>
-                      <FormField
-                        control={form.control}
-                        name={`products.${index}.description`}
-                        render={({ field, fieldState }) => (
-                          <FormItem>
-                            <FormControl>
-                              <Input {...field} />
-                            </FormControl>
-                          </FormItem>
-                        )}
-                      />
-                    </TableCell>
-                    <TableCell>
-                      <FormField
-                        control={form.control}
-                        name={`products.${index}.quantity`}
-                        render={({ field, fieldState }) => (
-                          <FormItem>
-                            <FormControl>
-                              <Input
-                                type="number"
-                                {...field}
-                                onChange={(e) => field.onChange(parseInt(e.target.value))}
-                              />
-                            </FormControl>
-                          </FormItem>
-                        )}
-                      />
-                    </TableCell>
-                    <TableCell>
-                      <FormField
-                        control={form.control}
-                        name={`products.${index}.unitPrice`}
-                        render={({ field, fieldState }) => (
-                          <FormItem>
-                            <FormControl>
-                              <Input
-                                type="string"
-                                {...field}
-                                onChange={(e) => field.onChange(parseInt(e.target.value))}
-                              />
-                            </FormControl>
-                          </FormItem>
-                        )}
-                      />
-                    </TableCell>
-                    <TableCell>
-                      <Input
-                        disabled
-                        value={form.watch(`products.${index}.quantity`) * form.watch(`products.${index}.unitPrice`)}
-                      />
-                    </TableCell>
-                    <TableCell>
-                      <Button variant={"secondary"} onClick={() => products.remove(index)}>
-                        X
-                      </Button>
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-              <TableCaption>
-                <Button
-                  variant={"secondary"}
-                  onClick={() =>
-                    products.append({
-                      totalInclVat: 0,
-                      totalExclVat: 0,
-                      unitPrice: 0,
-                      description: "",
-                      total: 0,
-                      quantity: 0,
-                      serial: "",
-                    })
-                  }
+        <form
+          onSubmit={form.handleSubmit(onSubmit, onError)}
+          className="grid grid-cols-6 gap-4"
+          onKeyDown={(e) => {
+            if (e.key === "Enter") e.preventDefault();
+          }}
+        >
+          <FormField
+            control={form.control}
+            name="issuedAt"
+            render={({ field }) => (
+              <FormItem className="col-span-6 md:col-span-3">
+                <FormLabel>Issued at</FormLabel>
+                <FormControl>
+                  <DatePicker className="w-full" selected={field.value} onSelect={field.onChange} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="paymentOption"
+            render={({ field }) => (
+              <FormItem className="col-span-6 md:col-span-3">
+                <FormLabel>Payment option</FormLabel>
+                <Select onValueChange={field.onChange} defaultValue={field.value}>
+                  <FormControl>
+                    <SelectTrigger className="w-full">
+                      <SelectValue placeholder="Select payment option" />
+                    </SelectTrigger>
+                  </FormControl>
+                  <SelectContent>
+                    {paymentOptions.map((option) => (
+                      <SelectItem key={option.value} value={option.value}>
+                        {option.text}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="account"
+            render={({ field }) => (
+              <FormItem className="col-span-6 md:col-span-3 md:col-start-4">
+                <FormLabel>Account</FormLabel>
+                <Select
+                  onValueChange={(value) => {
+                    const option = accounts.find((account) => account.value === value);
+                    if (option) form.setValue("isVat", option.isVat, { shouldDirty: true });
+                    field.onChange(value);
+                  }}
+                  defaultValue={field.value}
                 >
-                  +
-                </Button>
-              </TableCaption>
-            </Table>
+                  <FormControl>
+                    <SelectTrigger className="w-full">
+                      <SelectValue placeholder="Select account" />
+                    </SelectTrigger>
+                  </FormControl>
+                  <SelectContent>
+                    {accounts.map((account) => (
+                      <SelectItem key={account.value} value={account.value}>
+                        {account.text}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="amount"
+            render={({ field }) => (
+              <FormItem className="col-span-6 md:col-span-3 md:col-start-4">
+                <FormLabel>Amount</FormLabel>
+                <FormControl>
+                  <Input placeholder="Amount" {...field} />
+                </FormControl>
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="isVat"
+            render={({ field }) => (
+              <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3 col-span-6 md:col-span-3 md:col-start-4">
+                <FormLabel>Vat</FormLabel>
+                <FormControl>
+                  <Switch checked={field.value} onCheckedChange={field.onChange} />
+                </FormControl>
+              </FormItem>
+            )}
+          />
+
+          <div className="flex flex-col col-span-6 md:col-span-3 md:col-start-4">
+            <Label>Total</Label>
+            <Input disabled value={calcTotal()} />
           </div>
-
-          <Separator />
-
-          <div className="flex flex-col gap-2 items-end">
-            <div className="flex gap-4 items-center">
-              <p className="w-36">Total Excl. Vat</p>
-              <div className="w-36">
-                <Input disabled value={getSum()} />
-              </div>
-            </div>
-            <div className="flex gap-4 items-center">
-              <p className="w-36">Vat</p>
-              <div className="w-36">
-                <Input disabled value={"25%"} />
-              </div>
-            </div>
-            <div className="flex gap-4 items-center">
-              <p className="w-36">Vat Cost</p>
-              <div className="w-36">
-                <Input disabled value={getSum() * 1.25 - getSum()} />
-              </div>
-            </div>
-            <div className="flex gap-4 items-center">
-              <p className="w-36">Total Incl. Vat</p>
-              <div className="w-36">
-                <Input disabled value={getSum() * 1.25} />
-              </div>
-            </div>
-          </div>
-
-          <Button className="mb-10" type="submit">
+          <Button className="col-span-6 md:col-span-3 md:col-start-4" type="submit">
             Create Expense
           </Button>
         </form>

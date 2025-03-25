@@ -9,16 +9,23 @@ import { Button } from "@/components/ui/button";
 import { CalendarIcon } from "lucide-react";
 import { SelectSingleEventHandler } from "react-day-picker";
 
-export const DatePicker: React.FC<{
+type Props = {
   onSelect: SelectSingleEventHandler;
   selected?: Date;
-}> = ({ onSelect, selected }) => {
+  className?: string;
+};
+
+export const DatePicker = ({ onSelect, selected, className }: Props) => {
   return (
     <Popover>
       <PopoverTrigger asChild>
         <Button
           variant={"outline"}
-          className={cn("w-[280px] justify-start text-left font-normal", !selected && "text-muted-foreground")}
+          className={cn(
+            "w-[280px] justify-start text-left font-normal",
+            !selected && "text-muted-foreground",
+            className
+          )}
         >
           <CalendarIcon className="mr-2 h-4 w-4" />
           {selected ? format(selected, "PPP") : <span>Pick a date</span>}
