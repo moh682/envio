@@ -1,4 +1,4 @@
-import { InvoiceForm } from "./form";
+import { InvoiceForm } from "./partials/form";
 
 async function Page() {
   return <InvoiceForm />;
