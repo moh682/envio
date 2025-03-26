@@ -1,5 +1,5 @@
 import React from "react";
-import { ExponseForm } from "./form";
+import { ExponseForm } from "./partials/form";
 
 async function Page() {
   return <ExponseForm />;
