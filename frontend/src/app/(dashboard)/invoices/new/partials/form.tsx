@@ -1,41 +1,17 @@
 "use client";
 
-import { DatePicker } from "@/components/date-picker";
 import { Button } from "@/components/ui/button";
-import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
+import { Form } from "@/components/ui/form";
 import { Separator } from "@/components/ui/separator";
-import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { zodResolver } from "@hookform/resolvers/zod";
 import React from "react";
-import { useFieldArray, useForm } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import z from "zod";
 import { InvoiceInfo } from "./invoice-info";
 import { CustomerInfo } from "./customer-info";
 import { Summary } from "./summary";
 import { Products } from "./products";
-
-export const InvoiceSchema = z.object({
-  invoiceNumber: z.number(),
-  issuedAt: z.date(),
-  name: z.string(),
-  email: z.union([z.string(), z.string().email()]),
-  carRegistration: z
-    .string()
-    .min(1)
-    .toLowerCase()
-    .transform((value) => value.replaceAll(" ", "")),
-  phone: z.string(),
-  address: z.string(),
-  products: z.array(
-    z.object({
-      id: z.string(),
-      description: z.string().min(1),
-      quantity: z.number().positive(),
-      price: z.number().positive(),
-    })
-  ),
-});
+import { InvoiceSchema } from "./schema";
 
 export const InvoiceForm = () => {
   const form = useForm<z.infer<typeof InvoiceSchema>>({

@@ -7,7 +7,7 @@ import { TableHeader, TableRow, TableHead, TableBody, TableCell, TableCaption, T
 import React from "react";
 import { useFieldArray, UseFormReturn } from "react-hook-form";
 import { z } from "zod";
-import { InvoiceSchema } from "./form";
+import { InvoiceSchema } from "./schema";
 
 type Props = {
   form: UseFormReturn<z.infer<typeof InvoiceSchema>>;

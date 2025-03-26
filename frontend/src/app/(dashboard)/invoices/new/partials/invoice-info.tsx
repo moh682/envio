@@ -2,11 +2,11 @@
 
 import React from "react";
 import { UseFormReturn } from "react-hook-form";
-import { InvoiceSchema } from "./form";
 import { DatePicker } from "@/components/date-picker";
 import { FormField, FormItem, FormLabel, FormControl } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { z } from "zod";
+import { InvoiceSchema } from "./schema";
 
 type Prop = {
   form: UseFormReturn<z.infer<typeof InvoiceSchema>>;
