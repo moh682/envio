@@ -2,6 +2,7 @@ import { appInfo } from "@/config/appInfo";
 import JsonWebToken from "jsonwebtoken";
 import type { JwtHeader, JwtPayload, SigningKeyCallback } from "jsonwebtoken";
 import jwksClient from "jwks-rsa";
+import { cookies } from "next/headers";
 
 const client = jwksClient({
   jwksUri: `${appInfo.apiDomain}${appInfo.apiBasePath}/jwt/jwks.json`,
@@ -57,3 +58,14 @@ export async function getSessionForSSR(cookies: Array<{ name: string; value: str
     return { accessTokenPayload: undefined, hasToken, error: error as Error };
   }
 }
+
+export const getSessionSSR = async () => {
+  const cookiesFromReq = await cookies();
+  const cookiesArray: Array<{ name: string; value: string }> = Array.from(cookiesFromReq.getAll()).map(
+    ({ name, value }) => ({
+      name,
+      value,
+    })
+  );
+  return await getSessionForSSR(cookiesArray);
+};
