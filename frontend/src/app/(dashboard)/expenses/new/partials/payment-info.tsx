@@ -142,8 +142,8 @@ export const PaymentInfo = ({ form }: Props) => {
 
       <div className="flex flex-col gap-2">
         <Label>Total</Label>
-        <div className="flex-1 border rounded-md py-[6px] px-3 shadow-xs">
-          {calcTotal() || <span className="text-gray-500 text-sm">Total</span>}
+        <div className="flex-1 border rounded-md py-[6px] px-3 shadow-xs text-sm">
+          {calcTotal() ? <span>{calcTotal()}</span> : <span className="text-gray-500">Total</span>}
         </div>
       </div>
     </div>
