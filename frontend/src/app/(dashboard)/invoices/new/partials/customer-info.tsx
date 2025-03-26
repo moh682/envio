@@ -71,7 +71,7 @@ export const CustomerInfo = ({ form }: Props) => {
         name="carRegistration"
         render={({ field }) => (
           <FormItem>
-            <FormLabel>CarRegistration</FormLabel>
+            <FormLabel>Car registration</FormLabel>
             <FormControl>
               <Input {...field} />
             </FormControl>
