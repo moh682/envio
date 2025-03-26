@@ -7,7 +7,6 @@ import {
   DropdownMenuTrigger,
 } from "./ui/dropdown-menu";
 import { SignOut } from "./sign-out";
-import { Avatar, AvatarImage } from "./ui/avatar";
 import Image from "next/image";
 
 export const Account = () => {
