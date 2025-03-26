@@ -5,13 +5,13 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Form } from "@/components/ui/form";
 import { Button } from "@/components/ui/button";
-import { ExpenseSchema } from "./schema";
+import { expenseSchema } from "./schema";
 import { BillingInfo } from "./billing-info";
 import { PaymentInfo } from "./payment-info";
 
 export const ExponseForm = () => {
-  const form = useForm<z.infer<typeof ExpenseSchema>>({
-    resolver: zodResolver(ExpenseSchema),
+  const form = useForm<z.infer<typeof expenseSchema>>({
+    resolver: zodResolver(expenseSchema),
     defaultValues: {
       issuedAt: new Date(),
       paymentOption: "",
@@ -22,7 +22,7 @@ export const ExponseForm = () => {
     },
   });
 
-  const onSubmit = async (values: z.infer<typeof ExpenseSchema>) => {
+  const onSubmit = async (values: z.infer<typeof expenseSchema>) => {
     if (isNaN(Number(values.amount))) {
       form.setError("amount", {
         message: "Must be a number",

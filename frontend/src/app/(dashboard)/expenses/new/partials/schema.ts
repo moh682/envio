@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-export const ExpenseSchema = z.object({
+export const expenseSchema = z.object({
   issuedAt: z.date(),
   paymentOption: z.string().min(1),
   account: z.string().min(1),

@@ -3,7 +3,7 @@
 import React, { useState } from "react";
 import { UseFormReturn } from "react-hook-form";
 import { z } from "zod";
-import { ExpenseSchema } from "./schema";
+import { expenseSchema } from "./schema";
 import { FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { DatePicker } from "@/components/date-picker";
 import { PlusCircleIcon } from "lucide-react";
@@ -13,7 +13,7 @@ import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 
 type Props = {
-  form: UseFormReturn<z.infer<typeof ExpenseSchema>>;
+  form: UseFormReturn<z.infer<typeof expenseSchema>>;
 };
 
 export const BillingInfo = ({ form }: Props) => {
