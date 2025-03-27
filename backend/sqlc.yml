@@ -1,0 +1,14 @@
+version: "2"
+sql:
+  - engine: "postgresql"
+    queries: "internal/frameworks/postgres/query.sql"
+    schema: "internal/frameworks/postgres/migrations"
+    gen:
+      go:
+        package: "db"
+        sql_package: "database/sql"
+        out: "internal/frameworks/postgres/db"
+        overrides:
+         - db_type: "decimal"
+           go_type:
+             type: "float64"
