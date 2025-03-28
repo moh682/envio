@@ -43,6 +43,6 @@ func (s *httpServer) ListenAndServe(port int) error {
 	}
 
 	addr := ":" + strconv.Itoa(port)
-	server := middlewares.Combine(middlewares.Logger(s.mux))
+	server := middlewares.Combine(middlewares.Logger(s.mux), middlewares.Cors((s.mux)))
 	return http.ListenAndServe(addr, server)
 }
