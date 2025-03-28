@@ -9,19 +9,19 @@ import (
 type ProductStatus string
 
 type Product struct {
-	ID        uuid.UUID
-	UpdatedAt time.Time
-	CreatedAt time.Time
-	DeletedAt time.Time
+	ID        uuid.UUID `json:"id"`
+	UpdatedAt time.Time `json:"updatedAt"`
+	CreatedAt time.Time `json:"createdAt"`
+	DeletedAt time.Time `json:"deletedAt"`
 
-	Name        string
-	Description string
-	Serial      string
-	Quantity    float64
-	UnitPrice   float64
+	Name        string  `json:"name"`
+	Description string  `json:"description"`
+	Serial      string  `json:"serial"`
+	Quantity    float64 `json:"quantity"`
+	UnitPrice   float64 `json:"unitPrice"`
 	// including tax
-	Total      float64
-	IsRefunded bool
+	Total      float64 `json:"total"`
+	IsRefunded bool    `json:"isRefunded"`
 }
 
 func NewProduct(name, description, serial string, quantity float64, total float64, isRefunded bool) *Product {

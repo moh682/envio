@@ -32,11 +32,11 @@ var (
 )
 
 type Payment struct {
-	ID       uuid.UUID
-	Amount   float64
-	PaidAt   time.Time
-	Currency Currency
-	Method   PaymentMethod
+	ID       uuid.UUID     `json:"id"`
+	Amount   float64       `json:"amount"`
+	PaidAt   time.Time     `json:"paidAt"`
+	Currency Currency      `json:"currency"`
+	Method   PaymentMethod `json:"method"`
 }
 
 func NewPayment(id uuid.UUID, amount float64, paidAt time.Time, currency Currency, method PaymentMethod) (*Payment, error) {

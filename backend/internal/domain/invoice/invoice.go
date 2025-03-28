@@ -30,23 +30,23 @@ var (
 )
 
 type Invoice struct {
-	ID        uuid.UUID
-	UpdatedAt time.Time
-	CreatedAt time.Time
-	DeletedAt *time.Time
+	ID        uuid.UUID  `json:"id"`
+	UpdatedAt time.Time  `json:"updatedAt"`
+	CreatedAt time.Time  `json:"createdAt"`
+	DeletedAt *time.Time `json:"deletedAt"`
 
-	Number   int64
-	IssuedAt time.Time
+	Number   int64     `json:"number"`
+	IssuedAt time.Time `json:"issuedAt"`
 
-	Total        float64
-	TotalExclVat float64
-	VatPct       float64
-	VatAmount    float64
-	Status       PaymentStatus
+	Total        float64       `json:"total"`
+	TotalExclVat float64       `json:"totalExclVat"`
+	VatPct       float64       `json:"vatPct"`
+	VatAmount    float64       `json:"vatAmount"`
+	Status       PaymentStatus `json:"status"`
 
-	Customer Customer
-	Products []*Product
-	Payments []*Payment
+	Customer Customer   `json:"customer"`
+	Products []*Product `json:"products"`
+	Payments []*Payment `json:"payments"`
 }
 
 const (

@@ -5,7 +5,7 @@ import "time"
 type Statistic struct {
 	Date         time.Time `json:"date"`
 	Count        int64     `json:"count"`
-	TotalExclVat float64   `json:"total_excl_vat"`
-	TotalInclVat float64   `json:"total_incl_vat"`
-	VatAmount    float64   `json:"vat_amount"`
+	TotalExclVat float64   `json:"totalExclVat"`
+	TotalInclVat float64   `json:"totalInclVat"`
+	VatAmount    float64   `json:"vatAmount"`
 }
