@@ -7,9 +7,11 @@ services:
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: somePassword
-      POSTGRES_DB: supertokens
     ports:
       - 5432:5432
+    volumes:
+      # Mount our custom init script. It will run *only* on a fresh DB.
+      - ./docker/init-db.sql:/docker-entrypoint-initdb.d/init-db.sql
     networks:
       - app_network
     restart: unless-stopped
@@ -27,7 +29,7 @@ services:
     ports:
       - 3567:3567
     environment:
-      POSTGRESQL_CONNECTION_URI: "postgresql://postgres:somePassword@db:5432/supertokens"
+      POSTGRESQL_CONNECTION_URI: "postgresql://superTokens:somePassword@db:5432/superTokens_db"
       API_KEYS: "07072a1c-ab07-4bec-be33-112423823312"
     networks:
       - app_network
