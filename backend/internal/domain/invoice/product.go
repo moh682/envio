@@ -2,41 +2,34 @@ package invoice
 
 import (
 	"time"
-
-	"github.com/google/uuid"
 )
 
 type ProductStatus string
 
 type Product struct {
-	ID        uuid.UUID `json:"id"`
+	ID     int32  `json:"id"`
+	Serial string `json:"serial"`
+	// Deprecated: not implemented
 	UpdatedAt time.Time `json:"updatedAt"`
+	// Deprecated: not implemented
 	CreatedAt time.Time `json:"createdAt"`
+	// Deprecated: not implemented
 	DeletedAt time.Time `json:"deletedAt"`
 
-	Name        string  `json:"name"`
 	Description string  `json:"description"`
-	Serial      string  `json:"serial"`
 	Quantity    float64 `json:"quantity"`
-	UnitPrice   float64 `json:"unitPrice"`
-	// including tax
-	Total      float64 `json:"total"`
-	IsRefunded bool    `json:"isRefunded"`
+	Rate        float64 `json:"rate"`
+	Total       float64 `json:"total"`
 }
 
 func NewProduct(name, description, serial string, quantity float64, total float64, isRefunded bool) *Product {
 	return &Product{
-		ID:          uuid.New(),
 		CreatedAt:   time.Now(),
 		UpdatedAt:   time.Now(),
 		DeletedAt:   time.Time{},
-		Name:        name,
 		Description: description,
 		Serial:      serial,
-
-		UnitPrice:  total / quantity,
-		Quantity:   quantity,
-		Total:      total,
-		IsRefunded: isRefunded,
+		Quantity:    quantity,
+		Total:       total,
 	}
 }
