@@ -34,9 +34,25 @@ export default async function layout({ children }: Props) {
      */
     return <TryRefreshComponent key={Date.now()} />;
   }
+
+  const financeYears = [
+    {
+      id: "2025",
+      year: "2025",
+    },
+    {
+      id: "2024",
+      year: "2024",
+    },
+    {
+      id: "2023",
+      year: "2023",
+    },
+  ];
+
   return (
     <SidebarProvider>
-      <AppSidebar />
+      <AppSidebar financeYearId="2025" financeYears={financeYears} />
       <SidebarInset>
         <header className="flex justify-between h-16 shrink-0 items-center gap-2 border-b px-4">
           <SidebarTrigger className="-ml-1" />
