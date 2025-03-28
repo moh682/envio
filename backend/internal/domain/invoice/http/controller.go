@@ -1,4 +1,4 @@
-package invoice
+package invoice_http
 
 import (
 	"encoding/json"
@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/google/uuid"
+	"github.com/moh682/envio/backend/internal/domain/invoice"
 )
 
 type Controller interface {
@@ -14,10 +15,10 @@ type Controller interface {
 }
 
 type httpController struct {
-	invoiceService Service
+	invoiceService invoice.Service
 }
 
-func NewHttpController(invoiceService Service) Controller {
+func NewHttpController(invoiceService invoice.Service) Controller {
 	return &httpController{invoiceService}
 }
 
@@ -48,16 +49,10 @@ func (c *httpController) CreateInvoice() http.HandlerFunc {
 			return
 		}
 
-		customer, err := c.invoiceService.GetCustomerByID(r.Context(), inv.CustomerID)
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-			return
-		}
-
-		products := make([]*Product, len(inv.Products))
+		products := make([]*invoice.Product, len(inv.Products))
 		for i, p := range inv.Products {
-			products[i] = &Product{
-				Name:        p.Name,
+			products[i] = &invoice.Product{
+				ID:          uuid.New(),
 				Description: p.Description,
 				Serial:      p.Serial,
 				Quantity:    p.Quantity,
@@ -66,12 +61,23 @@ func (c *httpController) CreateInvoice() http.HandlerFunc {
 			}
 		}
 
-		newInvoice := Invoice{
+		customer := invoice.Customer{
+			ID:      uuid.New(),
+			Name:    inv.Customer.Name,
+			Email:   inv.Customer.Email,
+			Phone:   inv.Customer.Phone,
+			Address: inv.Customer.Address,
+			Car: &invoice.Car{
+				Registration: inv.Customer.Car.Registration,
+			},
+		}
+
+		newInvoice := invoice.Invoice{
 			ID:           uuid.New(),
 			TotalExclVat: inv.TotalExclVat,
 			VatAmount:    inv.VatAmount,
-			Status:       FullyPaid,
-			Payments: []*Payment{
+			Status:       invoice.FullyPaid,
+			Payments: []*invoice.Payment{
 				{
 					ID:       uuid.New(),
 					Amount:   inv.Total,
@@ -83,11 +89,11 @@ func (c *httpController) CreateInvoice() http.HandlerFunc {
 			IssuedAt: inv.IssuedAt,
 			VatPct:   .25,
 			Total:    inv.Total,
-			Customer: *customer,
+			Customer: customer,
 			Products: products,
 		}
 
-		err = c.invoiceService.Store(r.Context(), newInvoice)
+		err := c.invoiceService.Store(r.Context(), newInvoice)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
