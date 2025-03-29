@@ -80,6 +80,5 @@ CREATE TABLE expenses (
     is_vat              BOOLEAN NOT NULL,
     total               float NOT NULL,
     CONSTRAINT fk_organization_id FOREIGN KEY (organization_id) REFERENCES organizations (id),
-    CONSTRAINT fk_financial_year FOREIGN KEY (organization_id, financial_year) REFERENCES financial_years (number, organization_id)
+    CONSTRAINT fk_financial_year FOREIGN KEY (organization_id, financial_year) REFERENCES financial_years (organization_id, year)
 );
-
