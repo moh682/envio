@@ -1,6 +1,7 @@
 -- organization
 CREATE TABLE organizations (
     id                      UUID PRIMARY KEY,
+    name                    VARCHAR(255) NOT NULL,
     invoice_number_start    VARCHAR(50) NOT NULL
 );
 

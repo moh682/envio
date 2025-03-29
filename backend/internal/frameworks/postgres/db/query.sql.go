@@ -11,6 +11,46 @@ import (
 	"github.com/google/uuid"
 )
 
+const createOrganization = `-- name: CreateOrganization :exec
+INSERT INTO organizations (
+	id,
+	name
+) VALUES (
+	$1,
+	$2
+)
+`
+
+type CreateOrganizationParams struct {
+	ID   uuid.UUID
+	Name string
+}
+
+func (q *Queries) CreateOrganization(ctx context.Context, arg CreateOrganizationParams) error {
+	_, err := q.db.ExecContext(ctx, createOrganization, arg.ID, arg.Name)
+	return err
+}
+
+const createOrganizationUser = `-- name: CreateOrganizationUser :exec
+INSERT INTO users_organizations (
+	organization_id,
+	user_id
+) VALUES (
+	$1,
+	$2
+)
+`
+
+type CreateOrganizationUserParams struct {
+	OrganizationID uuid.UUID
+	UserID         uuid.UUID
+}
+
+func (q *Queries) CreateOrganizationUser(ctx context.Context, arg CreateOrganizationUserParams) error {
+	_, err := q.db.ExecContext(ctx, createOrganizationUser, arg.OrganizationID, arg.UserID)
+	return err
+}
+
 const getAllInvoicesByOrganizationId = `-- name: GetAllInvoicesByOrganizationId :many
 SELECT organization_id, number, financial_year, issue_date, name, email, phone, car_registration, total, is_vat FROM invoices WHERE organization_id = $1
 `

@@ -63,6 +63,7 @@ type InvoiceProduct struct {
 
 type Organization struct {
 	ID                 uuid.UUID
+	Name               string
 	InvoiceNumberStart string
 }
 
