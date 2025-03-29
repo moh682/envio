@@ -10,6 +10,9 @@ import (
 	"github.com/moh682/envio/backend/internal/domain/invoice"
 	invoice_http "github.com/moh682/envio/backend/internal/domain/invoice/http"
 	invoice_repositories "github.com/moh682/envio/backend/internal/domain/invoice/repositories"
+	"github.com/supertokens/supertokens-golang/recipe/emailpassword"
+	"github.com/supertokens/supertokens-golang/recipe/session"
+	"github.com/supertokens/supertokens-golang/supertokens"
 )
 
 type Server interface {
@@ -21,6 +24,33 @@ type httpServer struct {
 }
 
 func NewHttpServer(db *sql.DB) Server {
+
+	apiBasePath := "/auth"
+	websiteBasePath := "/auth"
+	err := supertokens.Init(supertokens.TypeInput{
+		Supertokens: &supertokens.ConnectionInfo{
+			// We use try.supertokens for demo purposes.
+			// At the end of the tutorial we will show you how to create
+			// your own SuperTokens core instance and then update your config.
+			ConnectionURI: "http://localhost:3567",
+			APIKey:        "63b35b7d-2f7b-4e88-b4db-a0b4e8646435",
+		},
+		AppInfo: supertokens.AppInfo{
+			AppName:         "be",
+			APIDomain:       "http://localhost:8080",
+			WebsiteDomain:   "http://localhost:8080",
+			APIBasePath:     &apiBasePath,
+			WebsiteBasePath: &websiteBasePath,
+		},
+		RecipeList: []supertokens.Recipe{
+			emailpassword.Init(nil),
+			session.Init(nil),
+		},
+	})
+
+	if err != nil {
+		panic(err.Error())
+	}
 
 	invoiceRepository := invoice_repositories.NewPostgres(db)
 	invoiceService := invoice.NewService(invoiceRepository)
@@ -43,6 +73,6 @@ func (s *httpServer) ListenAndServe(port int) error {
 	}
 
 	addr := ":" + strconv.Itoa(port)
-	server := middlewares.Combine(middlewares.Logger(s.mux), middlewares.Cors((s.mux)))
+	server := middlewares.Combine(middlewares.Auth(s.mux), middlewares.Logger(s.mux), middlewares.Cors((s.mux)))
 	return http.ListenAndServe(addr, server)
 }

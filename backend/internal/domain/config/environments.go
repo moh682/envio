@@ -15,12 +15,19 @@ type PGConfig struct {
 	Port     string
 }
 
+type SuperTokenConfig struct {
+	ApiKey        string
+	ConnectionUri string
+}
+
 type Config interface {
 	GetPostgresConfig() PGConfig
+	GetSuperTokensConfig() SuperTokenConfig
 }
 
 type config struct {
-	pg PGConfig
+	pg                PGConfig
+	superTokensConfig SuperTokenConfig
 }
 
 func NewConfig() (Config, error) {
@@ -38,11 +45,21 @@ func NewConfig() (Config, error) {
 		Port:     os.Getenv("POSTGRES_PORT"),
 	}
 
+	superTokensConfig := SuperTokenConfig{
+		ConnectionUri: os.Getenv("SUPERTOKENS_URI"),
+		ApiKey:        os.Getenv("SUPERTOKENS_API_KEY"),
+	}
+
 	return &config{
-		pg: pgConfig,
+		pg:                pgConfig,
+		superTokensConfig: superTokensConfig,
 	}, nil
 }
 
 func (c *config) GetPostgresConfig() PGConfig {
 	return c.pg
+}
+
+func (c *config) GetSuperTokensConfig() SuperTokenConfig {
+	return c.superTokensConfig
 }

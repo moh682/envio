@@ -3,6 +3,7 @@ import { columns, Invoice } from "./partials/columns";
 import { Link } from "@/components/link";
 import { PlusIcon } from "lucide-react";
 import { DataTable } from "@/components/data-table";
+import { rawFetch } from "@/lib/fetch";
 
 const getData = async (): Promise<Invoice[]> => [
   {
@@ -31,7 +32,17 @@ const getData = async (): Promise<Invoice[]> => [
   },
 ];
 
+const getDataFromServer = async () => {
+  const response = await rawFetch("/invoices", {
+    method: "GET",
+  });
+
+  return await response.json();
+};
+
 async function Page() {
+  const data22 = await getDataFromServer();
+  console.log(data22);
   const data = await getData();
   return (
     <div className="space-y-3">

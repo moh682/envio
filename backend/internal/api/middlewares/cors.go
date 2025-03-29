@@ -17,9 +17,6 @@ func Cors(next http.Handler) http.Handler {
 				strings.Join(append([]string{"Content-Type"},
 					supertokens.GetAllCORSHeaders()...), ","))
 			response.Header().Set("Access-Control-Allow-Methods", "*")
-			response.Write([]byte(""))
-		} else {
-			next.ServeHTTP(response, r)
 		}
 	})
 }
