@@ -4,6 +4,9 @@ import { AppSidebar } from "@/components/side-bar";
 import { SidebarInset, SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { getSessionSSR } from "@/lib/auth";
 import { redirect } from "next/navigation";
+import { getOrganization } from "../domains/organization/service";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { CreateOrganization } from "@/components/create.organization";
 
 type Props = Readonly<{
   children: React.ReactNode;
@@ -34,6 +37,12 @@ export default async function layout({ children }: Props) {
      */
     return <TryRefreshComponent key={Date.now()} />;
   }
+
+  const organizaiton = await getOrganization();
+
+  console.log(organizaiton);
+
+  if (!organizaiton) return <CreateOrganization />;
 
   const financeYears = [
     {

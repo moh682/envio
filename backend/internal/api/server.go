@@ -10,6 +10,9 @@ import (
 	"github.com/moh682/envio/backend/internal/domain/invoice"
 	invoice_http "github.com/moh682/envio/backend/internal/domain/invoice/http"
 	invoice_repositories "github.com/moh682/envio/backend/internal/domain/invoice/repositories"
+	"github.com/moh682/envio/backend/internal/domain/organization"
+	organization_http "github.com/moh682/envio/backend/internal/domain/organization/http"
+	organization_repositories "github.com/moh682/envio/backend/internal/domain/organization/repositories"
 	"github.com/supertokens/supertokens-golang/recipe/emailpassword"
 	"github.com/supertokens/supertokens-golang/recipe/session"
 	"github.com/supertokens/supertokens-golang/supertokens"
@@ -33,12 +36,12 @@ func NewHttpServer(db *sql.DB) Server {
 			// At the end of the tutorial we will show you how to create
 			// your own SuperTokens core instance and then update your config.
 			ConnectionURI: "http://localhost:3567",
-			APIKey:        "63b35b7d-2f7b-4e88-b4db-a0b4e8646435",
+			APIKey:        "07072a1c-ab07-4bec-be33-112423823312",
 		},
 		AppInfo: supertokens.AppInfo{
 			AppName:         "be",
 			APIDomain:       "http://localhost:8080",
-			WebsiteDomain:   "http://localhost:8080",
+			WebsiteDomain:   "http://localhost:3000",
 			APIBasePath:     &apiBasePath,
 			WebsiteBasePath: &websiteBasePath,
 		},
@@ -52,17 +55,24 @@ func NewHttpServer(db *sql.DB) Server {
 		panic(err.Error())
 	}
 
+	//Invoice
 	invoiceRepository := invoice_repositories.NewPostgres(db)
 	invoiceService := invoice.NewService(invoiceRepository)
 	invoiceController := invoice_http.NewHttpController(invoiceService)
 
+	organizationRepository := organization_repositories.NewPostgres(db)
+	organizationService := organization.NewService(organizationRepository)
+	organizationController := organization_http.NewHttpController((organizationService))
+
 	// TODO: extract invoice routes into their own function
-	invoiceRoutes := http.NewServeMux()
-	invoiceRoutes.HandleFunc("GET /invoices", invoiceController.ListInvoices())
-	invoiceRoutes.HandleFunc("POST /invoices", invoiceController.CreateInvoice())
+	routes := http.NewServeMux()
+	routes.HandleFunc("GET /invoices", invoiceController.ListInvoices())
+	routes.HandleFunc("POST /invoices", invoiceController.CreateInvoice())
+
+	routes.HandleFunc("GET /organization", organizationController.GetOrganizationByUserId())
 
 	return &httpServer{
-		mux: invoiceRoutes,
+		mux: routes,
 	}
 }
 

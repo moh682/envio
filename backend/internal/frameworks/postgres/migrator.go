@@ -5,7 +5,6 @@ import (
 	"database/sql"
 	"embed"
 	"fmt"
-	"log"
 
 	_ "github.com/lib/pq"
 
@@ -32,24 +31,20 @@ func NewMigrator(db *sql.DB, migrationFS embed.FS) (Migrator, error) {
 	}, nil
 }
 
-
 func (m *migrator) Up(ctx context.Context) error {
 
 	driver, err := postgres.WithInstance(m.db, &postgres.Config{})
 	if err != nil {
-		log.Println("number 1", err)
 		return err
 	}
 
 	sourceDriver, err := iofs.New(MigrationFS, "migrations")
 	if err != nil {
-		log.Println("number 2", err)
 		return err
 	}
 
 	migration, err := migrate.NewWithInstance("iofs", sourceDriver, "sqlite3", driver)
 	if err != nil {
-		log.Println("number 3",err)
 		return err
 	}
 
@@ -62,14 +57,12 @@ func (m *migrator) Up(ctx context.Context) error {
 
 		version, isDirty, err := migration.Version()
 		if err != nil {
-			log.Println("number 4",err)
 			return err
 		}
 
 		if isDirty {
 			err = migration.Force(int(version))
 			if err != nil {
-				log.Println("number 5",err)
 				return err
 			}
 		}

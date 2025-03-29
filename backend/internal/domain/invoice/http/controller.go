@@ -23,7 +23,6 @@ func NewHttpController(invoiceService invoice.Service) Controller {
 
 func (c *httpController) ListInvoices() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-
 		log.Println("invoices")
 		w.WriteHeader(http.StatusOK)
 		json.NewEncoder(w).Encode("")

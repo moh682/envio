@@ -89,3 +89,14 @@ func (q *Queries) GetAllProductsByInvoiceId(ctx context.Context, arg GetAllProdu
 	}
 	return items, nil
 }
+
+const getOrganizationByUserId = `-- name: GetOrganizationByUserId :one
+SELECT organization_id, user_id FROM users_organizations WHERE user_id =$1
+`
+
+func (q *Queries) GetOrganizationByUserId(ctx context.Context, userID uuid.UUID) (UsersOrganization, error) {
+	row := q.db.QueryRowContext(ctx, getOrganizationByUserId, userID)
+	var i UsersOrganization
+	err := row.Scan(&i.OrganizationID, &i.UserID)
+	return i, err
+}

@@ -30,7 +30,7 @@ services:
       - 3567:3567
     environment:
       POSTGRESQL_CONNECTION_URI: "postgresql://superTokens:somePassword@db:5432/superTokens_db"
-      API_KEYS: 07072a1c-ab07-4bec-be33-112423823312,63b35b7d-2f7b-4e88-b4db-a0b4e8646435
+      API_KEYS: "07072a1c-ab07-4bec-be33-112423823312,63b35b7d-2f7b-4e88-b4db-a0b4e8646435"
     networks:
       - app_network
     restart: unless-stopped
