@@ -13,7 +13,6 @@ export const getOrganization = async (): Promise<CreateOrganizationPostResult | 
   if (response.status === 404) return undefined;
 
   const data = await response.json();
-  console.log(data);
 
   return data;
 };
