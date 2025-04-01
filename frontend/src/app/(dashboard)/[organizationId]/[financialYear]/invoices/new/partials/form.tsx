@@ -39,10 +39,6 @@ export const InvoiceForm = () => {
     console.log(values);
   };
 
-  const onError = (errors: any) => {
-    console.log({ errors });
-  };
-
   const getSum = () => {
     return form.watch("products").reduce((acc, item) => acc + item.quantity * item.price, 0);
   };
@@ -51,7 +47,7 @@ export const InvoiceForm = () => {
     <section>
       <Form {...form}>
         <form
-          onSubmit={form.handleSubmit(onSubmit, onError)}
+          onSubmit={form.handleSubmit(onSubmit)}
           className="grid grid-cols-6 gap-3"
           onKeyDown={(e) => {
             if (e.key === "Enter") e.preventDefault();

@@ -5,7 +5,6 @@ import {
   SidebarContent,
   SidebarGroup,
   SidebarGroupContent,
-  SidebarGroupLabel,
   SidebarHeader,
   SidebarMenu,
   SidebarMenuButton,
@@ -54,9 +53,11 @@ type FinanceYear = {
 type Props = {
   financeYears: FinanceYear[];
   financeYearId: string;
+  financialYear: number;
+  organizationId: string;
 };
 
-export function AppSidebar({ financeYears, financeYearId }: Props) {
+export function AppSidebar({ financeYears, financeYearId, financialYear, organizationId }: Props) {
   return (
     <Sidebar>
       <SidebarHeader>
@@ -103,7 +104,7 @@ export function AppSidebar({ financeYears, financeYearId }: Props) {
               {items.map((item) => (
                 <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton asChild>
-                    <a href={item.url}>
+                    <a href={`/${organizationId}/${financialYear}${item.url}`}>
                       <item.icon />
                       <span>{item.title}</span>
                     </a>

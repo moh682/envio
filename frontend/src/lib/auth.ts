@@ -43,7 +43,7 @@ export async function getSessionForSSR(cookies: Array<{ name: string; value: str
   hasToken: boolean;
   error: Error | undefined;
 }> {
-  let accessToken = cookies.find((cookie) => cookie.name === "sAccessToken")?.value;
+  const accessToken = cookies.find((cookie) => cookie.name === "sAccessToken")?.value;
   const hasToken = !!accessToken;
   try {
     if (accessToken) {

@@ -7,7 +7,7 @@ import { appInfo } from "./appInfo";
 import { TypeInput } from "supertokens-node/types";
 import SuperTokens from "supertokens-node";
 
-export let backendConfig = (): TypeInput => {
+export const backendConfig = (): TypeInput => {
   return {
     supertokens: {
       connectionURI: process.env.SUPERTOKENS_URI as string,
