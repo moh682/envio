@@ -11,10 +11,45 @@ import (
 
 type Controller interface {
 	GetOrganizationByUserId() http.HandlerFunc
+	CreateOrganization() http.HandlerFunc
 }
 
 type httpController struct {
 	organizationService organization.Service
+}
+
+type CreateOrganizationRequest struct {
+	Name               string `json:"name"`
+	InvoiceNumberStart int32  `json:"invoiceNumberStart"`
+}
+
+// CreateOrganization implements Controller.
+func (h *httpController) CreateOrganization() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		sessionContainer := session.GetSessionFromRequestContext(r.Context())
+		userID := sessionContainer.GetUserID()
+
+		userUUID := uuid.MustParse(userID)
+
+		defer r.Body.Close()
+
+		var reqBody CreateOrganizationRequest
+
+		err := json.NewDecoder(r.Body).Decode(&reqBody)
+		if err != nil {
+			w.WriteHeader(http.StatusBadRequest)
+			return
+		}
+
+		organization, err := h.organizationService.CreateOrganization(r.Context(), userUUID, reqBody.Name, reqBody.InvoiceNumberStart)
+		if err != nil {
+			w.WriteHeader(500)
+			return
+		}
+
+		w.WriteHeader(http.StatusCreated)
+		json.NewEncoder(w).Encode(organization)
+	}
 }
 
 // GetOrganizationByUserId implements Controller.

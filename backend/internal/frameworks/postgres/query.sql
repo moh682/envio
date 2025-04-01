@@ -5,15 +5,17 @@ SELECT * FROM invoices WHERE organization_id = $1;
 SELECT * FROM invoice_products WHERE organization_id = $1 AND invoice_number = $2;
 
 -- name: GetOrganizationByUserId :one
-SELECT * FROM users_organizations WHERE user_id =$1;
+SELECT * FROM organizations JOIN users_organizations ON organizations.id = users_organizations.organization_id AND users_organizations.user_id = $1;
 
 -- name: CreateOrganization :exec
 INSERT INTO organizations (
 	id,
-	name
+	name,
+	invoice_number_start
 ) VALUES (
 	$1,
-	$2
+	$2,
+	$3
 );
 
 -- name: CreateOrganizationUser :exec

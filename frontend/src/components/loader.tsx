@@ -1,5 +1,5 @@
 type Props = {
-  text: string;
+  text?: string;
 };
 
 export const Loader = ({ text }: Props) => {
@@ -12,7 +12,7 @@ export const Loader = ({ text }: Props) => {
       >
         <span className="sr-only">Loading...</span>
       </div>
-      <span>{text}</span>
+      {text && <span>{text}</span>}
     </div>
   );
 };

@@ -70,6 +70,7 @@ func NewHttpServer(db *sql.DB) Server {
 	routes.HandleFunc("POST /invoices", invoiceController.CreateInvoice())
 
 	routes.HandleFunc("GET /organization", organizationController.GetOrganizationByUserId())
+	routes.HandleFunc("POST /organization", organizationController.CreateOrganization())
 
 	return &httpServer{
 		mux: routes,

@@ -14,20 +14,23 @@ import (
 const createOrganization = `-- name: CreateOrganization :exec
 INSERT INTO organizations (
 	id,
-	name
+	name,
+	invoice_number_start
 ) VALUES (
 	$1,
-	$2
+	$2,
+	$3
 )
 `
 
 type CreateOrganizationParams struct {
-	ID   uuid.UUID
-	Name string
+	ID                 uuid.UUID
+	Name               string
+	InvoiceNumberStart int32
 }
 
 func (q *Queries) CreateOrganization(ctx context.Context, arg CreateOrganizationParams) error {
-	_, err := q.db.ExecContext(ctx, createOrganization, arg.ID, arg.Name)
+	_, err := q.db.ExecContext(ctx, createOrganization, arg.ID, arg.Name, arg.InvoiceNumberStart)
 	return err
 }
 
@@ -131,12 +134,26 @@ func (q *Queries) GetAllProductsByInvoiceId(ctx context.Context, arg GetAllProdu
 }
 
 const getOrganizationByUserId = `-- name: GetOrganizationByUserId :one
-SELECT organization_id, user_id FROM users_organizations WHERE user_id =$1
+SELECT id, name, invoice_number_start, organization_id, user_id FROM organizations JOIN users_organizations ON organizations.id = users_organizations.organization_id AND users_organizations.user_id = $1
 `
 
-func (q *Queries) GetOrganizationByUserId(ctx context.Context, userID uuid.UUID) (UsersOrganization, error) {
+type GetOrganizationByUserIdRow struct {
+	ID                 uuid.UUID
+	Name               string
+	InvoiceNumberStart int32
+	OrganizationID     uuid.UUID
+	UserID             uuid.UUID
+}
+
+func (q *Queries) GetOrganizationByUserId(ctx context.Context, userID uuid.UUID) (GetOrganizationByUserIdRow, error) {
 	row := q.db.QueryRowContext(ctx, getOrganizationByUserId, userID)
-	var i UsersOrganization
-	err := row.Scan(&i.OrganizationID, &i.UserID)
+	var i GetOrganizationByUserIdRow
+	err := row.Scan(
+		&i.ID,
+		&i.Name,
+		&i.InvoiceNumberStart,
+		&i.OrganizationID,
+		&i.UserID,
+	)
 	return i, err
 }
