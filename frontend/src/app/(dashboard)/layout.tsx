@@ -4,7 +4,7 @@ import { AppSidebar } from "@/components/side-bar";
 import { SidebarInset, SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { getSessionSSR } from "@/lib/auth";
 import { redirect } from "next/navigation";
-import { getOrganization } from "../domains/organization/actions";
+import { getOrganization } from "../../domains/organization/actions";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { CreateOrganization } from "@/components/create-organization";
 

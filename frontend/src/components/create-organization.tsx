@@ -5,12 +5,12 @@ import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "./ui/form";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { createOrganizationSchema } from "@/app/domains/organization/schema";
+import { createOrganizationSchema } from "@/domains/organization/schema";
 import { z } from "zod";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
 import { Loader } from "./loader";
-import { createOrganization } from "@/app/domains/organization/actions";
+import { createOrganization } from "@/domains/organization/actions";
 import { toast } from "sonner";
 
 export const CreateOrganization = () => {

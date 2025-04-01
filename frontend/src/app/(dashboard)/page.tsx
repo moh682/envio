@@ -1,4 +1,4 @@
-import { getOrganization } from "../domains/organization/actions";
+import { getOrganization } from "../../domains/organization/actions";
 import { redirect } from "next/navigation";
 
 export default async function () {
