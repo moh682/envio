@@ -3,6 +3,7 @@ package organization_repositories
 import (
 	"context"
 	"database/sql"
+	"time"
 
 	"github.com/google/uuid"
 	"github.com/moh682/envio/backend/internal/domain/organization"
@@ -15,6 +16,7 @@ type postgresRepository struct {
 
 // CreateOrganization implements organization.Repository.
 func (p *postgresRepository) CreateOrganization(ctx context.Context, userId uuid.UUID, name string, invoiceNumberStart int32) (*organization.Organization, error) {
+	now := time.Now()
 	tx, err := p.db.Begin()
 	if err != nil {
 		return nil, err
@@ -29,6 +31,11 @@ func (p *postgresRepository) CreateOrganization(ctx context.Context, userId uuid
 	}
 
 	err = qtx.CreateOrganizationUser(ctx, db.CreateOrganizationUserParams{UserID: userId, OrganizationID: organizationId})
+	if err != nil {
+		return nil, err
+	}
+
+	err = qtx.CreateFinancialYear(ctx, db.CreateFinancialYearParams{OrganizationID: organizationId, Year: int32(now.Year())})
 	if err != nil {
 		return nil, err
 	}

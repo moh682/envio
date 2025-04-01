@@ -26,3 +26,12 @@ INSERT INTO users_organizations (
 	$1,
 	$2
 );
+
+-- name: CreateFinancialYear :exec
+INSERT INTO financial_years (
+	organization_id,
+	year
+) VALUES (
+	$1,
+	$2
+);

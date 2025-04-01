@@ -11,6 +11,26 @@ import (
 	"github.com/google/uuid"
 )
 
+const createFinancialYear = `-- name: CreateFinancialYear :exec
+INSERT INTO financial_years (
+	organization_id,
+	year
+) VALUES (
+	$1,
+	$2
+)
+`
+
+type CreateFinancialYearParams struct {
+	OrganizationID uuid.UUID
+	Year           int32
+}
+
+func (q *Queries) CreateFinancialYear(ctx context.Context, arg CreateFinancialYearParams) error {
+	_, err := q.db.ExecContext(ctx, createFinancialYear, arg.OrganizationID, arg.Year)
+	return err
+}
+
 const createOrganization = `-- name: CreateOrganization :exec
 INSERT INTO organizations (
 	id,
