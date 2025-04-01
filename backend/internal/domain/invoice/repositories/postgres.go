@@ -31,9 +31,21 @@ func (p *postgresRepository) GetInvoicesByOrganizationId(ctx context.Context, or
 	invoices := make([]*invoice.Invoice, len(invoiceResults))
 
 	for index, value := range invoiceResults {
-		products, err := p.getAllProducts(ctx, organizationId, int32(value.Number))
+		results, err := queries.GetAllProductsByInvoiceId(ctx, db.GetAllProductsByInvoiceIdParams{OrganizationID: organizationId, InvoiceNumber: value.Number})
 		if err != nil {
 			return nil, err
+		}
+
+		products := make([]*invoice.Product, len(results))
+		for index, value := range results {
+			products[index] = &invoice.Product{
+				ID:          value.ID,
+				Serial:      value.Serial.String,
+				Description: value.Description,
+				Quantity:    float64(value.Quantity),
+				Rate:        value.Rate,
+				Total:       value.Total,
+			}
 		}
 
 		invoices[index] = &invoice.Invoice{
@@ -51,30 +63,6 @@ func (p *postgresRepository) GetInvoicesByOrganizationId(ctx context.Context, or
 // Store implements invoice.Repository.
 func (p *postgresRepository) Store(ctx context.Context, invoice invoice.Invoice) error {
 	panic("unimplemented")
-}
-
-func (p *postgresRepository) getAllProducts(ctx context.Context, organizationId uuid.UUID, invoiceNumber int32) ([]*invoice.Product, error) {
-	queries := db.New(p.db)
-
-	results, err := queries.GetAllProductsByInvoiceId(ctx, db.GetAllProductsByInvoiceIdParams{OrganizationID: organizationId, InvoiceNumber: invoiceNumber})
-	if err != nil {
-		return nil, err
-	}
-
-	products := make([]*invoice.Product, len(results))
-
-	for index, value := range results {
-		products[index] = &invoice.Product{
-			ID:          value.ID,
-			Serial:      value.Serial.String,
-			Description: value.Description,
-			Quantity:    float64(value.Quantity),
-			Rate:        value.Rate,
-			Total:       value.Total,
-		}
-	}
-
-	return products, nil
 }
 
 func NewPostgres(db *sql.DB) invoice.Repository {
