@@ -153,6 +153,33 @@ func (q *Queries) GetAllProductsByInvoiceId(ctx context.Context, arg GetAllProdu
 	return items, nil
 }
 
+const getFinancialYearsByOrganizationId = `-- name: GetFinancialYearsByOrganizationId :many
+SELECT organization_id, year FROM financial_years WHERE organization_id = $1
+`
+
+func (q *Queries) GetFinancialYearsByOrganizationId(ctx context.Context, organizationID uuid.UUID) ([]FinancialYear, error) {
+	rows, err := q.db.QueryContext(ctx, getFinancialYearsByOrganizationId, organizationID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []FinancialYear
+	for rows.Next() {
+		var i FinancialYear
+		if err := rows.Scan(&i.OrganizationID, &i.Year); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const getOrganizationByUserId = `-- name: GetOrganizationByUserId :one
 SELECT id, name, invoice_number_start, organization_id, user_id FROM organizations JOIN users_organizations ON organizations.id = users_organizations.organization_id AND users_organizations.user_id = $1
 `

@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/google/uuid"
+	"github.com/moh682/envio/backend/internal/domain/financial_year"
 	"github.com/moh682/envio/backend/internal/domain/organization"
 	"github.com/moh682/envio/backend/internal/frameworks/postgres/db"
 )
@@ -57,10 +58,22 @@ func (p *postgresRepository) GetOrganizationByUserId(ctx context.Context, userId
 		return nil, err
 	}
 
+	financialYearsResult, err := queries.GetFinancialYearsByOrganizationId(ctx, result.OrganizationID)
+	if err != nil {
+		return nil, err
+	}
+
+	financialYears := make([]*financial_year.FinancialYear, len(financialYearsResult))
+
+	for index, value := range financialYearsResult {
+		financialYears[index] = &financial_year.FinancialYear{Year: value.Year}
+	}
+
 	return &organization.Organization{
 		ID:                 result.OrganizationID,
 		Name:               result.Name,
 		InvoiceNumberStart: result.InvoiceNumberStart,
+		FinancialYears:     financialYears,
 	}, err
 }
 
