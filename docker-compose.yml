@@ -1,5 +1,3 @@
-version: "3"
-
 services:
   # Note: If you are assigning a custom name to your db service on the line below, make sure it does not contain underscores
   db:

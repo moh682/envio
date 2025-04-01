@@ -19,12 +19,6 @@ func Connect(user, password, dbname, host string) (*sql.DB, error) {
 		return nil, err
 	}
 
-	dirs, err := MigrationFS.ReadDir("migrations")
-	if err != nil {
-		return nil, err
-	}
-	fmt.Println("Dirs -- > ", dirs)
-
 	mg, err := NewMigrator(db, MigrationFS)
 	if err != nil {
 		return nil, err
@@ -34,7 +28,6 @@ func Connect(user, password, dbname, host string) (*sql.DB, error) {
 		return nil, err
 	}
 
-	fmt.Println("Connected to database", db)
-
+	fmt.Println("Connected to database")
 	return db, nil
 }
