@@ -4,7 +4,7 @@ import Dashboard from "supertokens-node/recipe/dashboard";
 import UserRoles from "supertokens-node/recipe/userroles";
 import UserMetaData from "supertokens-node/recipe/usermetadata";
 import { appInfo } from "./appInfo";
-import { TypeInput } from "supertokens-node/types";
+import type { TypeInput } from "supertokens-node/types";
 import SuperTokens from "supertokens-node";
 
 export const backendConfig = (): TypeInput => {
@@ -14,7 +14,13 @@ export const backendConfig = (): TypeInput => {
       apiKey: process.env.SUPERTOKENS_API_KEY,
     },
     appInfo,
-    recipeList: [EmailPasswordNode.init(), SessionNode.init(), Dashboard.init(), UserRoles.init(), UserMetaData.init()],
+    recipeList: [
+      EmailPasswordNode.init(),
+      SessionNode.init(),
+      Dashboard.init(),
+      UserRoles.init(),
+      UserMetaData.init(),
+    ],
     framework: "custom",
   };
 };
