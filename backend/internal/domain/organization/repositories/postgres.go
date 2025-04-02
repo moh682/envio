@@ -58,7 +58,7 @@ func (p *postgresRepository) GetOrganizationByUserId(ctx context.Context, userId
 		return nil, err
 	}
 
-	financialYearsResult, err := queries.GetFinancialYearsByOrganizationId(ctx, result.OrganizationID)
+	financialYearsResult, err := queries.GetFinancialYearsByUserIdOrganizationId(ctx, db.GetFinancialYearsByUserIdOrganizationIdParams{UserID: userId, OrganizationID: result.OrganizationID})
 	if err != nil {
 		return nil, err
 	}
@@ -66,7 +66,7 @@ func (p *postgresRepository) GetOrganizationByUserId(ctx context.Context, userId
 	financialYears := make([]*financial_year.FinancialYear, len(financialYearsResult))
 
 	for index, value := range financialYearsResult {
-		financialYears[index] = &financial_year.FinancialYear{Year: value.Year}
+		financialYears[index] = &financial_year.FinancialYear{Year: value}
 	}
 
 	return &organization.Organization{

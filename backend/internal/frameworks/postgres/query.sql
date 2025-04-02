@@ -7,8 +7,14 @@ SELECT * FROM invoice_products WHERE organization_id = $1 AND invoice_number = $
 -- name: GetOrganizationByUserId :one
 SELECT * FROM organizations JOIN users_organizations ON organizations.id = users_organizations.organization_id AND users_organizations.user_id = $1;
 
--- name: GetFinancialYearsByOrganizationId :many
-SELECT * FROM financial_years WHERE organization_id = $1;
+-- name: GetFinancialYearsByUserIdOrganizationId :many
+SELECT
+  financial_years.year
+FROM
+  financial_years
+  JOIN users_organizations ON users_organizations.user_id = $1
+  AND users_organizations.organization_id = financial_years.organization_id
+WHERE financial_years.organization_id = $2;
 
 -- name: CreateOrganization :exec
 INSERT INTO organizations (

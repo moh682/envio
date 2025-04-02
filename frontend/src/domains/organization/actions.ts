@@ -14,7 +14,6 @@ export const getOrganization = async (): Promise<CreateOrganizationPostResult | 
 
   const data = await response.json();
 
-  console.log(data);
   return data;
 };
 
@@ -30,5 +29,5 @@ export const createOrganization = async (values: CreateOrganizationPost) => {
 
   const financialYear = body.financialYears.sort((a, b) => a.year - b.year)[0].year;
 
-  redirect(`/${financialYear}`);
+  redirect(`/${body.id}/${financialYear}`);
 };

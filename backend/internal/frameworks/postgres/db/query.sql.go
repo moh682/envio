@@ -153,23 +153,34 @@ func (q *Queries) GetAllProductsByInvoiceId(ctx context.Context, arg GetAllProdu
 	return items, nil
 }
 
-const getFinancialYearsByOrganizationId = `-- name: GetFinancialYearsByOrganizationId :many
-SELECT organization_id, year FROM financial_years WHERE organization_id = $1
+const getFinancialYearsByUserIdOrganizationId = `-- name: GetFinancialYearsByUserIdOrganizationId :many
+SELECT
+  financial_years.year
+FROM
+  financial_years
+  JOIN users_organizations ON users_organizations.user_id = $1
+  AND users_organizations.organization_id = financial_years.organization_id
+WHERE financial_years.organization_id = $2
 `
 
-func (q *Queries) GetFinancialYearsByOrganizationId(ctx context.Context, organizationID uuid.UUID) ([]FinancialYear, error) {
-	rows, err := q.db.QueryContext(ctx, getFinancialYearsByOrganizationId, organizationID)
+type GetFinancialYearsByUserIdOrganizationIdParams struct {
+	UserID         uuid.UUID
+	OrganizationID uuid.UUID
+}
+
+func (q *Queries) GetFinancialYearsByUserIdOrganizationId(ctx context.Context, arg GetFinancialYearsByUserIdOrganizationIdParams) ([]int32, error) {
+	rows, err := q.db.QueryContext(ctx, getFinancialYearsByUserIdOrganizationId, arg.UserID, arg.OrganizationID)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	var items []FinancialYear
+	var items []int32
 	for rows.Next() {
-		var i FinancialYear
-		if err := rows.Scan(&i.OrganizationID, &i.Year); err != nil {
+		var year int32
+		if err := rows.Scan(&year); err != nil {
 			return nil, err
 		}
-		items = append(items, i)
+		items = append(items, year)
 	}
 	if err := rows.Close(); err != nil {
 		return nil, err

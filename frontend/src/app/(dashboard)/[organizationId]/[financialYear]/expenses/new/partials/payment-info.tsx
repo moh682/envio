@@ -46,18 +46,18 @@ export const PaymentInfo = ({ form }: Props) => {
   });
 
   const calcTotal = () => {
-    let amount = form.getValues().amount.toString();
+    let amount: string | number = form.getValues().amount.toString();
     const isVat = form.getValues().isVat;
 
     if (!amount) return "";
 
-    let parsedAmount = parseFloat(amount);
+    amount = parseFloat(amount);
 
-    if (isNaN(parsedAmount)) return "";
+    if (isNaN(amount)) return "";
 
-    if (isVat) parsedAmount = parsedAmount * 1.25;
+    if (isVat) amount = amount * 1.25;
 
-    return parsedAmount.toFixed(2);
+    return amount.toFixed(2);
   };
   return (
     <div className="col-span-6 md:col-span-3 space-y-4">
